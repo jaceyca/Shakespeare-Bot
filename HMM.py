@@ -549,6 +549,7 @@ def unsupervised_HMM(X, n_states, N_iters):
     '''
 
     # Make a set of observations.
+    print("Starting Unsupervised HMM")
     observations = set()
     for x in X:
         observations |= set(x)

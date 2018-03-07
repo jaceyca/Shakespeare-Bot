@@ -1,6 +1,7 @@
-from HMM import unsupervised_learning
-from preprocessing import read_files
+from HMM import unsupervised_HMM
+from preprocessing import read_files, featurize
 
 
-features, syllables = read_files
-unsupervised_learning(4, 20)
+poems, syllables = read_files(sep='poem')
+POSList, features = featurize(poems)
+HMM = unsupervised_HMM(features, 10, 10)

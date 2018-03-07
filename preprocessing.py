@@ -1,9 +1,13 @@
 from string import punctuation
 from nltk.tokenize import word_tokenize
+from nltk import pos_tag
+import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 # RUN THIS LINE THE FIRST TIME TO USE TOKENIZE
 # nltk.download('punkt')
+# nltk.download('averaged_perceptron_tagger')
+
 
 def strip_punct(s):
     return ''.join(c for c in s if c not in punctuation)
@@ -55,10 +59,22 @@ def read_files(sep='line'):
     return shakeLines, syllables
 
 
-# shakeLines, syllables = read_files()
-# vectorizer = TfidfVectorizer()
-# trained = vectorizer.fit_transform(shakeLines)
 
-# print(trained)
+def featurize(lines):
+    possiblePOS = []
+    features = []
+    for obs in lines:
+        # POS is a list of tuples being (word, POS)
+        POS = pos_tag(obs)
+        poemFeatures = []
+        # if it's a new POS, add it to the list
+        for pair in POS: 
+            if pair[1] not in possiblePOS:
+                possiblePOS.append(pair[1])
+            # we are simply indexing using the order in which they appear
+            poemFeatures.append(possiblePOS.index(pair[1]))
 
-read_files(sep='poem')
+        features.append(poemFeatures)
+
+    return possiblePOS, features
+

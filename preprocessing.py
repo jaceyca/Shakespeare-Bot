@@ -10,17 +10,30 @@ def strip_punct(s):
 
 
 # this currently just returns a list of lines
-def read_files():
+def read_files(sep='line'):
     # format: each line is an individual list of words in that line
     shakeLines = []
     # read in the shakespeare poems 
-    with open("./data/shakespeare.txt") as poems:
-        for index, line in enumerate(poems):
-            # super jank way to get rid of line numbers, but it works!
-            if line != "\n" and len(line) != 23 and len(line) != 22 and len(line) != 21:
-                shakeLines.append(strip_punct(line.rstrip("\n")))
+    if sep == 'line':
+        with open("./data/shakespeare.txt") as poems:
+            for index, line in enumerate(poems):
+                # super jank way to get rid of line numbers, but it works!
+                if line != "\n" and len(line) != 23 and len(line) != 22 and len(line) != 21:
+                    line = line.lower()
+                    shakeLines.append(word_tokenize(strip_punct(line.rstrip("\n"))))
     
-    # print(shakeLines)
+    # format: each poem is an individual list of words in that poem
+    if sep == 'poem':
+        file = open("./data/shakespeare.txt")
+        data = file.read()
+        paragraph = data.split("\n\n\n")
+        for poem in paragraph:
+            poem = poem.replace('\n', ' ')
+            poem = poem.lstrip()
+            poem = poem.split(' ', 1)[1]
+            poem = poem.lower()
+            shakeLines.append(word_tokenize(strip_punct(poem.rstrip("\n"))))
+
 
     # format: dictionary of how many syllables each word is
     # note that syllable differences at end of lines are ignored
@@ -47,3 +60,5 @@ def read_files():
 # trained = vectorizer.fit_transform(shakeLines)
 
 # print(trained)
+
+read_files(sep='poem')

@@ -394,7 +394,6 @@ class HiddenMarkovModel:
 
             states:     The randomly generated states as a list.
         '''
-
         emission = []
         state = random.choice(range(self.L))
         states = []

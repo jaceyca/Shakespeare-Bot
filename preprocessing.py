@@ -4,17 +4,40 @@ from nltk import pos_tag
 import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-# RUN THIS LINE THE FIRST TIME TO USE TOKENIZE
+# RUN THESE LINES THE FIRST TIME TO USE WORD TOKENIZE AND POS TAG
 # nltk.download('punkt')
 # nltk.download('averaged_perceptron_tagger')
 
 
 def strip_punct(s):
+    '''
+    This function strips the punctuation of any given string. 
+
+    Input: 
+        s: string to strip punctuation from 
+
+    Output: 
+        string stripped of punctuation
+    '''
     return ''.join(c for c in s if c not in punctuation)
 
 
-# this currently just returns a list of lines
-def read_files(sep='line'):
+def read_files(sep='poem'):
+    '''
+    This function reads the shakespeare and syllable files given to us.
+
+    Input: 
+        sep: either 'line' or 'poem'. If line, shakeLines is a separate entry 
+            per line, and if poem, shakeLines is a separate entry per poem
+
+    Output: 
+        shakeLines: A 2D list with each element being a list of the words in the
+            line or poem
+        syllables: a dictionary with each key being a word and it's value 
+            being how many syllables it has. The changed number of syllables
+            with the word being at the end of a line is currently ignored.
+    '''
+
     # format: each line is an individual list of words in that line
     shakeLines = []
     # read in the shakespeare poems 
@@ -61,7 +84,18 @@ def read_files(sep='line'):
 
 
 def featurize(lines):
+    '''
+    This function returns the feature representation of a set of lines.
+    Input: 
+        lines: An iterable object with each element being a list of strings
+    Output: 
+        possiblePOS: the list of possible parts of speech, where the index of 
+            each POS being the its number in the 
+        POSlookup:  A 2D array being POS, [word, frequency] for the given POS
+        features: The feature representation of the input
+    '''
     possiblePOS = []
+    POSlookup = []
     features = []
     for obs in lines:
         # POS is a list of tuples being (word, POS)
@@ -71,14 +105,37 @@ def featurize(lines):
         for pair in POS: 
             if pair[1] not in possiblePOS:
                 possiblePOS.append(pair[1])
+                POSlookup.append([])
+                POSlookup[possiblePOS.index(pair[1])].append([pair[0], 1])
+            else: 
+                firstCol = [row[0] for row in POSlookup[possiblePOS.index(pair[1])]]
+                if pair[0] not in firstCol:
+                    POSlookup[possiblePOS.index(pair[1])].append([pair[0], 1])
+                else:
+                    index = firstCol.index(pair[0])
+                    POSlookup[possiblePOS.index(pair[1])][index][1] += 1
             # we are simply indexing using the order in which they appear
+
             poemFeatures.append(possiblePOS.index(pair[1]))
+            # print(POSlookup[possiblePOS.index(pair[1])])
+            
+
 
         features.append(poemFeatures)
 
-    return possiblePOS, features
+
+    return possiblePOS, POSlookup, features
 
 def block_text():
+    '''
+    This function returns all the shakespeare poems reformatted in to a single
+    block of text. 
+
+    Input: None
+
+    Output: 
+        text: The shakespeare poems as a single block of text
+    '''
     text = []
     file = open("./data/shakespeare.txt")
     data = file.read()
@@ -91,6 +148,3 @@ def block_text():
         text.append(word_tokenize(strip_punct(poem.rstrip("\n"))))
 
     return text
-
-# block_text()
-

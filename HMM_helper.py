@@ -85,13 +85,13 @@ def states_to_wordclouds(hmm, obs_map, max_words=50, show=True):
 
 def parse_observations(text):
     # Convert text to dataset.
-    lines = [line.split() for line in text.split('\n') if line.split()]
+    # lines = [line.split() for line in text.split('\n') if line.split()]
 
     obs_counter = 0
     obs = []
     obs_map = {}
 
-    for line in lines:
+    for line in text:
         obs_elem = []
         
         for word in line:

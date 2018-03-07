@@ -78,3 +78,19 @@ def featurize(lines):
 
     return possiblePOS, features
 
+def block_text():
+    text = []
+    file = open("./data/shakespeare.txt")
+    data = file.read()
+    paragraph = data.split("\n\n\n")
+    for poem in paragraph:
+        poem = poem.replace('\n', ' ')
+        poem = poem.lstrip()
+        poem = poem.split(' ', 1)[1]
+        poem = poem.lower()
+        text.append(word_tokenize(strip_punct(poem.rstrip("\n"))))
+
+    return text
+
+# block_text()
+

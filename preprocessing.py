@@ -4,10 +4,14 @@ from nltk import pos_tag
 import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
 import re
+# you have to install pyphen
+from nltk.corpus import cmudict
+import pyphen
 
 # RUN THESE LINES THE FIRST TIME TO USE WORD TOKENIZE AND POS TAG
 # nltk.download('punkt')
 # nltk.download('averaged_perceptron_tagger')
+# nltk.download('cmudict')
 
 
 def strip_punct(s):
@@ -42,6 +46,8 @@ def read_text(textname):
 
 def read_spenser(sep='poem'):
     spenserLines = []
+    syllables = {}
+    cannotParse = []
     if sep == 'line':
         with open("./data/spenser.txt") as poems:
             for index, line in enumerate(poems):
@@ -64,7 +70,15 @@ def read_spenser(sep='poem'):
                 poem = poem.split(' ', 1)[1]
                 poem = poem.lower()
                 spenserLines.append(re.findall(r"[\w']+", strip_punct(poem.rstrip("\n"))))
-    return spenserLines
+
+    for thing in spenserLines:
+        for word in thing:
+            try:
+                syllables[word] = get_syllables(word)
+            except:
+                syllables[word] = guess_syllables(word)
+
+    return spenserLines, syllables
 
 
 def read_files(sep='poem'):
@@ -257,4 +271,19 @@ def char_text():
 
     return chars
 
-print(read_spenser())
+
+def get_syllables(word):
+    d = cmudict.dict()
+    return [len(list(y for y in x if y[-1].isdigit())) for x in d[word.lower()]][1] 
+
+
+def guess_syllables(word):
+    # this function is actually slow af but idk how to make it faster?
+    dic = pyphen.Pyphen(lang='en')
+    parsedWord = dic.inserted(word)
+    return parsedWord.count('-') + 1
+
+
+spenserLines, syllables, cannotParse = read_spenser()
+print(syllables)
+print(cannotParse)

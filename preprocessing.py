@@ -97,8 +97,46 @@ def read_files(sep='poem'):
             except:
                 syllables[key] = int(end)
 
-    return shakeLines, syllables
+    rhymes = {}
+    if sep == 'line':
+        # print(shakeLines)
+        # sonnet format: abab cdcd efef gg
+        for j in range(len(shakeLines)-1):
+            line = shakeLines[j]
+            last_word = line[-1]
+            i = (j % 14) + 1
+            # abab
+            if i == 1 or i == 2 or i == 5 or i == 6 or i == 9 or i == 10:
+                rhymes = make_rhyming_dictionary(rhymes, last_word, shakeLines[j+2][-1])
+            # elif i == 3 or i == 4 or i == 7 or i == 8 or i == 11 or i == 12:
+                # rhymes = make_rhyming_dictionary(rhymes, last_word, shakeLines[j-2][-1])
+            elif i == 13:
+                rhymes = make_rhyming_dictionary(rhymes, last_word, shakeLines[j+1][-1])
+            # elif i == 14:
+            #     rhymes = make_rhyming_dictionary(rhymes, last_word, shakeLines[j-1][-1])
 
+    return shakeLines, syllables, rhymes
+
+def make_rhyming_dictionary(dictionary, word1, word2):
+    if word1 in dictionary:
+        lst = dictionary.get(word1)
+        if word2 not in lst:
+            new_lst = dictionary[word1]
+            new_lst.append(word2)
+            dictionary[word1] = new_lst
+    else:
+        dictionary[word1] = [word2]
+
+    if word2 in dictionary:
+        lst = dictionary.get(word2)
+        if word1 not in lst:
+            new_lst = dictionary[word2]
+            new_lst.append(word1)
+            dictionary[word2] = new_lst
+    else:
+        dictionary[word2] = [word1]
+
+    return dictionary
 
 
 def featurize(lines):

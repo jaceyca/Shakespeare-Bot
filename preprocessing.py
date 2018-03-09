@@ -20,7 +20,9 @@ def strip_punct(s):
     Output: 
         string stripped of punctuation
     '''
-    newPunct = punctuation.replace("'", "")
+    # newPunct = punctuation.replace("'", "")
+    # newPunct = punctuation.replace("-", "")
+    newPunct = '''!"#$%&()*+,./:;<=>?@[\]^_`{|}~'''
     return ''.join(c for c in s if c not in newPunct)
 
 

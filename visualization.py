@@ -54,11 +54,11 @@ def generate_words(emission, POSlookup):
 
 
 
-text = block_text()
+text, chars = block_text()
 flat_text = [item for sublist in text for item in sublist]
 blockText = ' '.join(map(str, flat_text))
 #### WORDCLOUD VISUALIZATION ####
-# wordcloud = text_to_wordcloud(blockText, title='Shakespeare Poems')
+wordcloud = text_to_wordcloud(blockText, title='Shakespeare Poems')
 
 #### A AND O MATRIX VISUALIZATIONS ####
 

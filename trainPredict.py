@@ -44,14 +44,13 @@ def generate_words(emission, POSlookup, syllables):
 # beeEm, beeState = HMM.generate_emission(20)
 # print(generate_words(beeEm, beeLookup))
 
-
 poems, syllables, _ = read_files(sep='poem')
 lines, syllables, rhymes = read_files(sep='line')
 # print (rhymes)
 POSList, POSlookup, features = featurize(poems)
 
 # this takes ~10 minutes to run
-HMM = unsupervised_HMM(features, 10, 100)
+HMM = unsupervised_HMM(features, 10, 10)
 # note that the later emissions are less probable, so it's reasonable that max 
 # emission is much less than 30
 

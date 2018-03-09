@@ -12,14 +12,14 @@ def generate_words(emission, POSlookup, syllables):
 	Input:
 		emission: The list of emission, which represents the POS of the word
 		POSlookup: A 2D array being POS, [word, frequency] for the given POS
-
+		syllables: The dictionary of words and number of syllables each word has		
 	Output:
 		emStr: The sentence generated
 	'''
-	emStr = ''
-	syllableCount = 0
 	done = False
 	while not done:
+		emStr = ''
+		syllableCount = 0
 		for obs in emission: 
 			emRate = [row[1] for row in POSlookup[obs]]
 			emWords = [row[0] for row in POSlookup[obs]]
@@ -32,6 +32,7 @@ def generate_words(emission, POSlookup, syllables):
 			emStr = emStr + new_word + ' '
 			if syllableCount == 10:
 				done = True
+				break
 
 	return emStr
 

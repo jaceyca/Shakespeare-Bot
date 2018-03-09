@@ -40,6 +40,31 @@ def read_text(textname):
     return lines
 
 
+def read_spenser(sep='poem'):
+    spenserLines = []
+    if sep == 'line':
+        with open("./data/spenser.txt") as poems:
+            for index, line in enumerate(poems):
+                # super jank way to get rid of line numbers, but it works!
+                if line != "\n" and len(line) < 10:
+                    line = line.lower()
+                    spenserLines.append(re.findall(r"[\w']+", strip_punct(line.rstrip("\n"))))
+    
+    # format: each poem is an individual list of words in that poem
+    if sep == 'poem':
+        file = open("./data/spenser.txt")
+        data = file.read()
+        paragraph = data.split("\n\n")
+        for poem in paragraph:
+            if len(poem) < 10:
+                continue
+            else:
+                poem = poem.replace('\n', ' ')
+                poem = poem.lstrip()
+                poem = poem.split(' ', 1)[1]
+                poem = poem.lower()
+                spenserLines.append(re.findall(r"[\w']+", strip_punct(poem.rstrip("\n"))))
+    return spenserLines
 
 
 def read_files(sep='poem'):
@@ -232,3 +257,4 @@ def char_text():
 
     return chars
 
+print(read_spenser())

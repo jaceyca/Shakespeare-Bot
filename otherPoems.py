@@ -35,9 +35,7 @@ def get_line(HMM, syllCount, syllDict, POSlookup):
 		emStr = generate_words(emission, POSlookup)
 		splitStr = re.findall(r"[\w']+", emStr)
 
-		# print(splitStr)
 		for element in splitStr: 
-			# print(element)
 			if element[0] == "'":
 				element = element[1:]
 			if element[-1] == "'":
@@ -47,10 +45,8 @@ def get_line(HMM, syllCount, syllDict, POSlookup):
 			except:
 				emCount = 1
 				break
-		# print("Total Sylls: " + str(totalSylls))
 
 		if totalSylls < syllCount: 
-			# print("HELLO.")
 			emCount += 1
 		if totalSylls > syllCount: 
 			emCount = 1
@@ -65,4 +61,10 @@ HMM = unsupervised_HMM(features, 10, 10)
 print(get_line(HMM, 5, syllables, POSlookup))
 print(get_line(HMM, 7, syllables, POSlookup))
 print(get_line(HMM, 5, syllables, POSlookup))
+
+
+# sample haiku:
+# thou thee aught the ill 
+# of were antique one reckoned 
+# was seeming shall out 
 

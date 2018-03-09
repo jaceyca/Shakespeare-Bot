@@ -56,6 +56,7 @@ def states_to_wordclouds(hmm, obs_map, max_words=50, show=True):
     M = 100000
     n_states = len(hmm.A)
     obs_map_r = obs_map_reverser(obs_map)
+    print(obs_map_r)
     wordclouds = []
 
     # Generate a large emission.
@@ -71,6 +72,8 @@ def states_to_wordclouds(hmm, obs_map, max_words=50, show=True):
     # For each state, convert it into a wordcloud.
     for i in range(n_states):
         obs_lst = obs_count[i]
+        print(max(obs_lst))
+
         sentence = [obs_map_r[j] for j in obs_lst]
         sentence_str = ' '.join(sentence)
 

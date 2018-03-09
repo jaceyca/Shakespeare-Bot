@@ -147,7 +147,7 @@ def featurize(lines):
 def block_text():
     '''
     This function returns all the shakespeare poems reformatted in to a single
-    block of text. 
+    2D list with each entry being the tokenized words in the poem
 
     Input: None
 

@@ -153,10 +153,8 @@ def block_text():
 
     Output: 
         text: The shakespeare poems as a single block of text
-        chars: The shakespeare poems as a single chain of characters (no spaces)
     '''
     text = []
-    chars = ''
     file = open("./data/shakespeare.txt")
     data = file.read()
     paragraph = data.split("\n\n\n")
@@ -166,7 +164,31 @@ def block_text():
         poem = poem.split(' ', 1)[1]
         poem = poem.lower()
         words = re.findall(r"[\w']+", strip_punct(poem.rstrip("\n")))
-        chars += ''.join(words)
         text.append(words)
 
-    return text, chars
+    return text
+
+
+def char_text():
+    '''
+    This function returns all the shakespeare poems reformatted in to a single
+    2D list with each entry being the tokenized words in the poem
+
+    Input: None
+
+    Output: 
+        chars: The shakespeare poems as a single chain of characters (no spaces)
+    '''
+    chars = ''
+    file = open("./data/shakespeare.txt")
+    data = file.read()
+    paragraph = data.split("\n\n\n")
+    for poem in paragraph:
+        poem = poem.lstrip()
+        poem = poem.split(' ', 1)[1]
+        poem = poem.lower()
+        words = re.findall(r"[\w'\n]+", strip_punct(poem))
+        chars += ' '.join(words)
+
+    return chars
+

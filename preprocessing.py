@@ -153,8 +153,10 @@ def block_text():
 
     Output: 
         text: The shakespeare poems as a single block of text
+        chars: The shakespeare poems as a single chain of characters (no spaces)
     '''
     text = []
+    chars = ''
     file = open("./data/shakespeare.txt")
     data = file.read()
     paragraph = data.split("\n\n\n")
@@ -163,6 +165,8 @@ def block_text():
         poem = poem.lstrip()
         poem = poem.split(' ', 1)[1]
         poem = poem.lower()
-        text.append(re.findall(r"[\w']+", strip_punct(poem.rstrip("\n"))))
+        words = re.findall(r"[\w']+", strip_punct(poem.rstrip("\n")))
+        chars += ''.join(words)
+        text.append(words)
 
-    return text
+    return text, chars

@@ -1,6 +1,6 @@
 from HMM import unsupervised_HMM
 from HMM_helper import sample_sentence, parse_observations
-from preprocessing import read_files, featurize, block_text
+from preprocessing import read_files, featurize, block_text, read_text
 import numpy as np
 
 
@@ -27,15 +27,26 @@ def generate_words(emission, POSlookup):
 	return emStr
 
 
+# if it's your heart's desire to train on the bee movie
+# beeMovie = read_text("beeMovie")
+# beeList, beeLookup, beeFeat = featurize(beeMovie)
+# HMM = unsupervised_HMM(beeFeat, 10, 10)
+# beeEm, beeState = HMM.generate_emission(20)
+# print(generate_words(beeEm, beeLookup))
+
 
 poems, syllables = read_files(sep='poem')
 POSList, POSlookup, features = featurize(poems)
+
 # this takes ~10 minutes to run
 HMM = unsupervised_HMM(features, 10, 100)
 # note that the later emissions are less probable, so it's reasonable that max 
 # emission is much less than 30
+
+
 emission, states = HMM.generate_emission(20)
 print(generate_words(emission, POSlookup))
+
 # wow our sentence is fucking retarded. 
 # golden it of your which of gain term with whereon without her respect when you praising the face which to 
 

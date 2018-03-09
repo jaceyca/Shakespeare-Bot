@@ -3,6 +3,7 @@ from nltk.tokenize import word_tokenize
 from nltk import pos_tag
 import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
+import re
 
 # RUN THESE LINES THE FIRST TIME TO USE WORD TOKENIZE AND POS TAG
 # nltk.download('punkt')
@@ -19,7 +20,24 @@ def strip_punct(s):
     Output: 
         string stripped of punctuation
     '''
-    return ''.join(c for c in s if c not in punctuation)
+    newPunct = punctuation.replace("'", "")
+    return ''.join(c for c in s if c not in newPunct)
+
+
+def read_text(textname):
+    lines = []
+    fileName = "./data/" + textname + ".txt"
+    file = open(fileName)
+    for line in file:
+        sentences = re.split("\! |\? |\. |\n", line)
+    for s in sentences:
+        s = s.lower()
+        if s != "":
+            lines.append(re.findall(r"[\w']+", strip_punct(s.rstrip("\n"))))
+
+    return lines
+
+
 
 
 def read_files(sep='poem'):
@@ -47,7 +65,7 @@ def read_files(sep='poem'):
                 # super jank way to get rid of line numbers, but it works!
                 if line != "\n" and len(line) != 23 and len(line) != 22 and len(line) != 21:
                     line = line.lower()
-                    shakeLines.append(word_tokenize(strip_punct(line.rstrip("\n"))))
+                    shakeLines.append(re.findall(r"[\w']+", strip_punct(line.rstrip("\n"))))
     
     # format: each poem is an individual list of words in that poem
     if sep == 'poem':
@@ -59,7 +77,7 @@ def read_files(sep='poem'):
             poem = poem.lstrip()
             poem = poem.split(' ', 1)[1]
             poem = poem.lower()
-            shakeLines.append(word_tokenize(strip_punct(poem.rstrip("\n"))))
+            shakeLines.append(re.findall(r"[\w']+", strip_punct(poem.rstrip("\n"))))
 
 
     # format: dictionary of how many syllables each word is
@@ -145,6 +163,6 @@ def block_text():
         poem = poem.lstrip()
         poem = poem.split(' ', 1)[1]
         poem = poem.lower()
-        text.append(word_tokenize(strip_punct(poem.rstrip("\n"))))
+        text.append(re.findall(r"[\w']+", strip_punct(poem.rstrip("\n"))))
 
     return text

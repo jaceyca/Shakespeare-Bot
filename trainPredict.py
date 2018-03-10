@@ -25,7 +25,11 @@ def generate_words(emission, POSlookup, syllables, reverse=False, lastWord=None)
 		assert(lastWord is not None)
 		while not done:
 			emStr = lastWord
-			syllableCount = syllables[lastWord]
+			try:
+				syllableCount = syllables[lastWord]
+			except:
+				syllableCount = 2
+				print(lastWord)
 			for obs in emission:
 				emRate = [row[1] for row in POSlookup[obs]]
 				emWords = [row[0] for row in POSlookup[obs]]
@@ -33,9 +37,13 @@ def generate_words(emission, POSlookup, syllables, reverse=False, lastWord=None)
 				emRate = emRate/sum(emRate)
 
 				index = np.random.choice(np.arange(len(emRate)), p=emRate)
-				new_word = emWords[index]
-				syllableCount += syllables[new_word]
-				emStr = new_word + ' ' + emStr
+				newWord = emWords[index]
+				try:
+					syllableCount += syllables[newWord]
+				except:
+					syllableCount += 2
+					print(newWord)
+				emStr = newWord + ' ' + emStr
 				if syllableCount == 10:
 					done = True
 					break
@@ -50,9 +58,9 @@ def generate_words(emission, POSlookup, syllables, reverse=False, lastWord=None)
 				emRate = emRate/sum(emRate)
 
 				index = np.random.choice(np.arange(len(emRate)), p=emRate)
-				new_word = emWords[index]
-				syllableCount += syllables[new_word]
-				emStr = emStr + new_word + ' '
+				newWord = emWords[index]
+				syllableCount += syllables[newWord]
+				emStr = emStr + newWord + ' '
 				if syllableCount == 10:
 					done = True
 					break
@@ -69,7 +77,7 @@ def generate_words(emission, POSlookup, syllables, reverse=False, lastWord=None)
 
 def generate_sonnet(poems, lines, syllables, rhymes=None):
 	POSList, POSlookup, features = featurize(poems)
-	HMM = unsupervised_HMM(features, 10, 10)
+	HMM = unsupervised_HMM(features, 25, 100)
 	emission, states = HMM.generate_emission(10)
 	if rhymes is None:
 		sonnet = ""

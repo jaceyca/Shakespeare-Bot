@@ -7,6 +7,7 @@ import re
 # you have to install pyphen
 from nltk.corpus import cmudict
 import pyphen
+import json
 
 # RUN THESE LINES THE FIRST TIME TO USE WORD TOKENIZE AND POS TAG
 # nltk.download('punkt')
@@ -284,6 +285,8 @@ def guess_syllables(word):
     return parsedWord.count('-') + 1
 
 
-# spenserLines, syllables, cannotParse = read_spenser()
+# spenserLines, syllables = read_spenser()
 # print(syllables)
-# print(cannotParse)
+# with open("spenserSylls.txt", "w") as output:
+#     output.write(json.dumps(syllables))
+

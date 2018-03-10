@@ -1,7 +1,7 @@
 # RNN.py
 
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation
+from keras.layers import Dense, Dropout, Activation, Lambda
 from keras.layers import Embedding
 from keras.layers import LSTM
 from keras.utils import to_categorical
@@ -101,7 +101,11 @@ def get_training_data(n=10):
 
 	return X_train, Y_train, encoding_dict, vocab_size
 
-X_train, Y_train, encoding_dict, vocab_size = get_training_data(10)
+X_train, Y_train, encoding_dict, vocab_size = get_training_data(1)
+
+
+# Temperture
+temp = 0.75
 
 ## Train character-based LSTM
 model = Sequential()
@@ -109,24 +113,28 @@ model = Sequential()
 model.add(LSTM(200, input_shape=(len(X_train[0]), len(X_train[0][0]))))
 # Standard fully connected output layer with softmax activation
 model.add(Dense(vocab_size, activation='softmax'))
+model.add(Lambda(lambda x: x / temp))
+
 # print(model.summary())
 
 # Train model to minimize categorical cross-entropy (large number of epochs)
 model.compile(loss='categorical_crossentropy', optimizer='Adam')
 
-batch_size = 32
-epochs = 100
+batch_size = 64
+epochs = 50
 model.fit(X_train, Y_train, batch_size=batch_size, epochs=epochs)
-score = model.evaluate(X_train, Y_train, batch_size=32)
+score = model.evaluate(X_train, Y_train, batch_size=batch_size)
 print(score)
 
 # Save model to file
-model.save('rnn_bs'+str(batch_size)+'_e'+str(epochs)+'.h5')
+model.save('rnn_bs'+str(batch_size)+'_e'+str(epochs)+'_n'+str()+'.h5')
 
 # Generate text
 seed_text = "shall i compare thee to a summer's day?\n"
 num_chars = 600
 sequence_length = 40
+
+print(generate_text(model, encoding_dict, seed_text, num_chars, sequence_length))
 
 # Use this if doing non-max probability to generate a few different strings
 # for _ in range(10):

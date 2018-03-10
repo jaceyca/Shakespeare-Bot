@@ -267,7 +267,7 @@ def char_text():
         poem = poem.lstrip()
         poem = poem.split(' ', 1)[1]
         poem = poem.lower()
-        words = re.findall(r"[\w'\n]+", strip_punct(poem))
+        words = re.findall(r"[\w'\n.,?]+", poem)
         chars += ' '.join(words)
 
     return chars
@@ -285,7 +285,8 @@ def guess_syllables(word):
     return parsedWord.count('-') + 1
 
 
-spenserLines, syllables = read_spenser()
-print(syllables)
-with open("spenserSylls.txt", "w") as output:
-    output.write(json.dumps(syllables))
+# spenserLines, syllables = read_spenser()
+# print(syllables)
+# with open("spenserSylls.txt", "w") as output:
+#     output.write(json.dumps(syllables))
+

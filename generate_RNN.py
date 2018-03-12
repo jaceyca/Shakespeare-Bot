@@ -61,7 +61,8 @@ def generate_text(model, encoding, seed_text, num_chars, sequence_length, max_pr
 			prob_index = model.predict_classes(encoded_sequence)
 		else:
 			# Predict character by probability distribution
-			prob_index = model.predict_classes(encoded_sequence)[0]
+			prob_indices = model.predict(encoded_sequence)[0]
+			prob_index = np.random.choice(range(len(prob_indices)), p=prob_indices)
 		# Convert integer back to character
 		new_char = ''
 		for char, index in encoding.items():
@@ -121,10 +122,10 @@ def get_training_data(n=10):
 	return X_train, Y_train, encoding_dict, vocab_size
 
 ## Set parameters
-n = 3 # number of characters to move between sequences
-temperature = 1 # parameter for variability of output
+n = 1 # number of characters to move between sequences
+temperature = 1.5 # parameter for variability of output
 batch_size = 64 # lower is faster, but higher gives more accurate gradient
-epochs = 75
+epochs = 200
 
 # Get training data
 X_train, Y_train, encoding_dict, vocab_size = get_training_data(n)

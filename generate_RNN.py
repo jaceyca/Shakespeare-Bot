@@ -27,10 +27,25 @@ def apply_temperature(s, temperature):
 	index = np.exp(index) / np.sum(np.exp(index))
 	return np.argmax(np.random.multinomial(1,index,1))
 
-def generate_text(model, encoding, seed_text, num_chars, sequence_length):
+def generate_text(model, encoding, seed_text, num_chars, sequence_length, max_prob=False):
 	'''
 	This function uses the trained model and encoding map to generate text
-	of a 
+	of a sonnet for the requested number of characters, each time using the last 
+	sequence_length characters to predict the next character.
+
+	Input:
+		model: The trained model
+		encoding: the mapping of characters to integers
+		seed_text: the initial text used to predict the next characters
+		num_chars: the number of characters we want to predict
+		sequence_length: length of the sequences trained on
+		max_prob: 
+			True = take the highest probability character
+			False = take a character based on the probability distribution
+	
+	Ouput:
+		new_text: text with num_chars characters of generated text in 
+				  addition to the seed text
 	'''
 	# Initialize with this seed text
 	new_text = seed_text
@@ -41,12 +56,16 @@ def generate_text(model, encoding, seed_text, num_chars, sequence_length):
 		sequence = pad_sequences([sequence], maxlen=40, truncating='pre')
 		# Apply one-hot encoding
 		encoded_sequence = to_categorical(sequence, num_classes=len(encoding))
-		# Predict character by highest probability
-		highest_prob_index = model.predict_classes(encoded_sequence)
+		if max_prob:
+			# Predict character by max probability
+			prob_index = model.predict_classes(encoded_sequence)
+		else:
+			# Predict character by probability distribution
+			prob_index = model.predict_classes(encoded_sequence)[0]
 		# Convert integer back to character
 		new_char = ''
 		for char, index in encoding.items():
-			if index == highest_prob_index:
+			if index == prob_index:
 				new_char = char
 				break
 		new_text += new_char
@@ -67,7 +86,7 @@ def get_training_data(n=10):
 		vocab_size: Length of the vocabulary for one-hot encoding
 
 	'''
-	# Import training data (includes \n and spaces)
+	# Import training data (includes \n, spaces, and punctuation)
 	text = char_text()
 
 	# Organize data into sequences of a fixed length (40 chars) from the sonnet corpus
@@ -77,7 +96,7 @@ def get_training_data(n=10):
 	for i in range(seq_length, len(text)-1, n):
 		seq = text[i-seq_length:i]
 		sequences.append(seq)
-		next_char.append(text[i+1])
+		next_char.append(text[i])
 
 	# Map characters to integers based on place in the alphabet
 	encoding_dict = {}
@@ -101,41 +120,48 @@ def get_training_data(n=10):
 
 	return X_train, Y_train, encoding_dict, vocab_size
 
-X_train, Y_train, encoding_dict, vocab_size = get_training_data(1)
+## Set parameters
+n = 3 # number of characters to move between sequences
+temperature = 1 # parameter for variability of output
+batch_size = 64 # lower is faster, but higher gives more accurate gradient
+epochs = 75
 
-
-# Temperture
-temp = 0.75
+# Get training data
+X_train, Y_train, encoding_dict, vocab_size = get_training_data(n)
 
 ## Train character-based LSTM
 model = Sequential()
-# Single layer of 100-200 LSTM units
-model.add(LSTM(200, input_shape=(len(X_train[0]), len(X_train[0][0]))))
+# Two layers of 150 LSTM units
+num_units = 200
+# model.add(LSTM(num_units, return_sequences=True, input_shape=(len(X_train[0]), len(X_train[0][0]))))
+model.add(LSTM(num_units, input_shape=(len(X_train[0]), len(X_train[0][0]))))
+
 # Standard fully connected output layer with softmax activation
 model.add(Dense(vocab_size, activation='softmax'))
-model.add(Lambda(lambda x: x / temp))
+# Apply temperature to output of softmax activation
+model.add(Lambda(lambda x: x / temperature))
 
 # print(model.summary())
 
 # Train model to minimize categorical cross-entropy (large number of epochs)
-model.compile(loss='categorical_crossentropy', optimizer='Adam')
+model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
 
-batch_size = 64
-epochs = 50
+print('n=%d,temp=%f,lstm=%d,batch_size=%d,epochs=%d' %(n, temperature, num_units, batch_size, epochs))
+
 model.fit(X_train, Y_train, batch_size=batch_size, epochs=epochs)
 score = model.evaluate(X_train, Y_train, batch_size=batch_size)
 print(score)
 
-# Save model to file
-model.save('rnn_bs'+str(batch_size)+'_e'+str(epochs)+'_n'+str()+'.h5')
-
 # Generate text
 seed_text = "shall i compare thee to a summer's day?\n"
-num_chars = 600
+num_chars = 1000
 sequence_length = 40
 
-print(generate_text(model, encoding_dict, seed_text, num_chars, sequence_length))
+# Generate max probability predictions
+print(generate_text(model, encoding_dict, seed_text, num_chars, sequence_length, True))
 
-# Use this if doing non-max probability to generate a few different strings
-# for _ in range(10):
-# 	print(generate_text(model, encoding_dict, seed_text, num_chars, sequence_length))
+# Use this non-max probability to generate predictions
+print(generate_text(model, encoding_dict, seed_text, num_chars, sequence_length, False))
+
+# Save model to file
+model.save('rnn_bs'+str(batch_size)+'_e'+str(epochs)+'_n'+str(n)+'.h5')

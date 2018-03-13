@@ -122,10 +122,10 @@ def get_training_data(n=10):
 	return X_train, Y_train, encoding_dict, vocab_size
 
 ## Set parameters
-n = 1 # number of characters to move between sequences
-temperature = 1.5 # parameter for variability of output
+n = 2 # number of characters to move between sequences
+temperature = 0.25 # parameter for variability of output
 batch_size = 64 # lower is faster, but higher gives more accurate gradient
-epochs = 200
+epochs = 300
 
 # Get training data
 X_train, Y_train, encoding_dict, vocab_size = get_training_data(n)

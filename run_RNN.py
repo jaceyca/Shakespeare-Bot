@@ -16,8 +16,7 @@ from generate_RNN import get_training_data
 
 # Load desired model and encoding
 model = load_model('rnn_bs32_e10.h5')
-encoding = pickle.load(open('encoding.pkl','rb'))
-
+encoding_dict = pickle.load(open('encoding.pkl','rb'))
 seed_text = "shall i compare thee to a summer's day?\n"
 num_chars = 1000
 sequence_length = 40
